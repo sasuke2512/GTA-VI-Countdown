@@ -1,0 +1,6 @@
+{
+  "name": "ViceTime",
+  "description": "World time zones clock, interactive time converter, and live Grand Theft Auto VI launch countdown.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

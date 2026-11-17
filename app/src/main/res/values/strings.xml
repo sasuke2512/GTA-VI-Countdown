@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ViceTime</string>
+    <string name="nav_world_zones">World Zones</string>
+    <string name="nav_gta_countdown">GTA VI</string>
+    <string name="add_city">Add City</string>
+    <string name="search_zones_hint">Search city, country, or IANA zone…</string>
+    <string name="time_machine_title">Time Machine Converter</string>
+    <string name="time_machine_reset">Live Now</string>
+    <string name="gta_countdown_eyebrow">GRAND THEFT AUTO VI • LAUNCH RADAR</string>
+    <string name="gta_release_date_label">Official Console Release: Nov 19, 2026</string>
+    <string name="gta_unlocked_title">NOW LIVE IN THIS REGION</string>
+    <string name="rolling_wave_title">Global Midnight Launch Wave</string>
+    <string name="custom_target_title">Set Custom Countdown Target</string>
+    <string name="format_24h">24H</string>
+    <string name="format_12h">12H</string>
+</resources>
