@@ -66,19 +66,19 @@ fun LanguageFlagSelector(
       border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
       Row(
-        modifier = Modifier.padding(start = 12.dp, end = 6.dp),
+        modifier = Modifier.padding(start = 10.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
       ) {
         Text(
           text = activeFlag,
-          fontSize = 19.sp,
+          fontSize = 18.sp,
         )
         Icon(
           imageVector = Icons.Rounded.ArrowDropDown,
           contentDescription = null,
           tint = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.size(20.dp),
+          modifier = Modifier.size(18.dp),
         )
       }
     }

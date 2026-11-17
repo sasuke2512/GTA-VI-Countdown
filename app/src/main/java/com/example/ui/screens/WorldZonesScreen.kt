@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.data.LocalAppStrings
 import com.example.model.AppLanguage
 import com.example.ui.components.AppFooter
@@ -89,28 +90,30 @@ fun WorldZonesScreen(
             Column(modifier = Modifier.weight(1f)) {
               Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
               ) {
                 Icon(
                   imageVector = Icons.Rounded.Public,
                   contentDescription = null,
                   tint = MaterialTheme.colorScheme.secondary,
-                  modifier = Modifier.size(20.dp),
+                  modifier = Modifier.size(18.dp),
                 )
                 Text(
                   text = "ViceTime",
-                  style = MaterialTheme.typography.headlineMedium.copy(
+                  style = MaterialTheme.typography.titleLarge.copy(
                     fontFamily = OutfitFontFamily,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 19.sp,
                   ),
                   color = MaterialTheme.colorScheme.onBackground,
                   maxLines = 1,
+                  softWrap = false,
                   overflow = TextOverflow.Ellipsis,
                 )
               }
               Text(
                 text = "${strings.localPrefix} ${uiState.localZoneName} • ${uiState.pinnedClocks.size} ${strings.zonesCountSuffix}",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -120,7 +123,7 @@ fun WorldZonesScreen(
             Spacer(modifier = Modifier.width(6.dp))
 
             Row(
-              horizontalArrangement = Arrangement.spacedBy(6.dp),
+              horizontalArrangement = Arrangement.spacedBy(4.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               LanguageFlagSelector(
@@ -162,7 +165,7 @@ fun WorldZonesScreen(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
               ) {
                 Row(
-                  modifier = Modifier.padding(horizontal = 11.dp),
+                  modifier = Modifier.padding(horizontal = 10.dp),
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
                   Text(

@@ -108,7 +108,7 @@ fun WorldClockCard(
       Column(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(horizontal = 18.dp, vertical = 16.dp),
+          .padding(horizontal = 14.dp, vertical = 15.dp),
       ) {
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -118,7 +118,7 @@ fun WorldClockCard(
           Column(modifier = Modifier.weight(1f)) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
               Icon(
                 imageVector = phaseIcon,
@@ -128,10 +128,14 @@ fun WorldClockCard(
               )
               Text(
                 text = item.cityName,
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = OutfitFontFamily),
+                style = MaterialTheme.typography.titleLarge.copy(
+                  fontFamily = OutfitFontFamily,
+                  fontSize = 18.sp,
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
               )
               if (item.badge != null || item.isLocal) {
                 Surface(
@@ -151,6 +155,8 @@ fun WorldClockCard(
                       MaterialTheme.colorScheme.primary
                     },
                     fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    softWrap = false,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                   )
                 }
@@ -170,13 +176,15 @@ fun WorldClockCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Text(
                 text = item.relativeOffsetLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = phaseAccent,
+                maxLines = 1,
+                softWrap = false,
               )
               Text(
                 text = "•",
@@ -192,11 +200,13 @@ fun WorldClockCard(
                   MaterialTheme.colorScheme.primary
                 },
                 fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
               )
             }
           }
 
-          Spacer(modifier = Modifier.width(12.dp))
+          Spacer(modifier = Modifier.width(10.dp))
 
           Column(horizontalAlignment = Alignment.End) {
             Row(verticalAlignment = Alignment.Bottom) {
@@ -205,10 +215,12 @@ fun WorldClockCard(
                 style = MaterialTheme.typography.displayMedium.copy(
                   fontFamily = JetBrainsMonoFontFamily,
                   fontWeight = FontWeight.Bold,
-                  fontSize = 30.sp,
+                  fontSize = 27.sp,
                   fontFeatureSettings = "tnum",
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                softWrap = false,
               )
               Spacer(modifier = Modifier.width(3.dp))
               Column(horizontalAlignment = Alignment.Start) {

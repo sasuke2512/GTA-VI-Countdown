@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -129,14 +131,17 @@ fun GtaCountdownCompactBanner(
               overflow = TextOverflow.Ellipsis,
             )
           }
+          Spacer(modifier = Modifier.width(8.dp))
           Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
           ) {
             Text(
               text = strings.launchRadarTitle,
-              style = MaterialTheme.typography.labelSmall,
+              style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp),
               color = Color.White.copy(alpha = 0.85f),
+              maxLines = 1,
+              softWrap = false,
             )
             Icon(
               imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
@@ -166,7 +171,7 @@ fun GtaCountdownCompactBanner(
           Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             Text(
               text = String.format(
@@ -180,14 +185,22 @@ fun GtaCountdownCompactBanner(
               style = MaterialTheme.typography.headlineMedium.copy(
                 fontFamily = JetBrainsMonoFontFamily,
                 fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 fontFeatureSettings = "tnum",
               ),
               color = Color.White,
+              maxLines = 1,
+              softWrap = false,
+              overflow = TextOverflow.Ellipsis,
+              modifier = Modifier.weight(1f),
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
               text = "19 Nov 2026",
-              style = MaterialTheme.typography.labelSmall,
+              style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp),
               color = ViceSunsetAmber,
+              maxLines = 1,
+              softWrap = false,
             )
           }
         }
@@ -425,58 +438,74 @@ fun GtaCountdownHeroCard(
             style = MaterialTheme.typography.labelSmall,
             color = Color(0xFFB5B0D1),
           )
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            CountdownMode.entries.forEach { entry ->
-              val selected = entry == mode
-              val bgColor by animateColorAsState(
-                targetValue = if (selected) ViceFlamingo.copy(alpha = 0.22f) else Color.White.copy(alpha = 0.05f),
-                label = "modeBg",
-              )
-              val borderColor by animateColorAsState(
-                targetValue = if (selected) ViceFlamingo else Color.White.copy(alpha = 0.14f),
-                label = "modeBorder",
-              )
-              Surface(
-                modifier = Modifier
-                  .weight(1f)
-                  .height(48.dp)
-                  .clip(RoundedCornerShape(14.dp))
-                  .clickable {
-                    if (entry == CountdownMode.CUSTOM) {
-                      onOpenCustomPicker()
-                    } else {
-                      onSelectMode(entry)
-                    }
-                  }
-                  .testTag("mode_${entry.name.lowercase(Locale.US)}"),
-                shape = RoundedCornerShape(14.dp),
-                color = bgColor,
-                border = BorderStroke(1.dp, borderColor),
-              ) {
-                Box(
-                  contentAlignment = Alignment.Center,
-                  modifier = Modifier.padding(horizontal = 6.dp),
+          BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val useSingleRow = maxWidth >= 460.dp
+            val rows = if (useSingleRow) {
+              listOf(CountdownMode.entries)
+            } else {
+              CountdownMode.entries.chunked(2)
+            }
+            Column(
+              modifier = Modifier.fillMaxWidth(),
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              rows.forEach { rowEntries ->
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                  Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                  ) {
-                    Icon(
-                      imageVector = if (entry == CountdownMode.CUSTOM) Icons.Rounded.EditCalendar else Icons.Rounded.Public,
-                      contentDescription = null,
-                      tint = if (selected) ViceFlamingo else Color(0xFFB5B0D1),
-                      modifier = Modifier.size(14.dp),
+                  rowEntries.forEach { entry ->
+                    val selected = entry == mode
+                    val bgColor by animateColorAsState(
+                      targetValue = if (selected) ViceFlamingo.copy(alpha = 0.22f) else Color.White.copy(alpha = 0.05f),
+                      label = "modeBg",
                     )
-                    Text(
-                      text = strings.modeShort(entry),
-                      style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
-                      color = if (selected) Color.White else Color(0xFFB5B0D1),
-                      maxLines = 1,
-                      overflow = TextOverflow.Ellipsis,
+                    val borderColor by animateColorAsState(
+                      targetValue = if (selected) ViceFlamingo else Color.White.copy(alpha = 0.14f),
+                      label = "modeBorder",
                     )
+                    Surface(
+                      modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable {
+                          if (entry == CountdownMode.CUSTOM) {
+                            onOpenCustomPicker()
+                          } else {
+                            onSelectMode(entry)
+                          }
+                        }
+                        .testTag("mode_${entry.name.lowercase(Locale.US)}"),
+                      shape = RoundedCornerShape(14.dp),
+                      color = bgColor,
+                      border = BorderStroke(1.dp, borderColor),
+                    ) {
+                      Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                      ) {
+                        Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        ) {
+                          Icon(
+                            imageVector = if (entry == CountdownMode.CUSTOM) Icons.Rounded.EditCalendar else Icons.Rounded.Public,
+                            contentDescription = null,
+                            tint = if (selected) ViceFlamingo else Color(0xFFB5B0D1),
+                            modifier = Modifier.size(15.dp),
+                          )
+                          Text(
+                            text = strings.modeShort(entry),
+                            style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
+                            color = if (selected) Color.White else Color(0xFFB5B0D1),
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis,
+                          )
+                        }
+                      }
+                    }
                   }
                 }
               }

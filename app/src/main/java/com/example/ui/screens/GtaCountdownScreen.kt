@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.data.LocalAppStrings
 import com.example.model.AppLanguage
 import com.example.model.CountdownMode
@@ -82,9 +83,10 @@ fun GtaCountdownScreen(
           Column(modifier = Modifier.weight(1f)) {
             Text(
               text = strings.launchRadarTitle,
-              style = MaterialTheme.typography.headlineMedium.copy(
+              style = MaterialTheme.typography.titleLarge.copy(
                 fontFamily = OutfitFontFamily,
                 fontWeight = FontWeight.Bold,
+                fontSize = 19.sp,
               ),
               color = MaterialTheme.colorScheme.onBackground,
               maxLines = 1,
@@ -92,17 +94,17 @@ fun GtaCountdownScreen(
             )
             Text(
               text = strings.launchRadarSubtitle,
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
             )
           }
 
-          Spacer(modifier = Modifier.width(8.dp))
+          Spacer(modifier = Modifier.width(6.dp))
 
           Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
           ) {
             LanguageFlagSelector(
