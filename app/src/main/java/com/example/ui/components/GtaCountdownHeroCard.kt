@@ -101,107 +101,114 @@ fun GtaCountdownCompactBanner(
           ),
       )
 
-      Column(
+      BoxWithConstraints(
         modifier = Modifier
           .fillMaxWidth()
           .padding(16.dp),
       ) {
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.weight(1f),
-          ) {
-            Box(
-              modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(if (countdown?.isUnlocked == true) ViceMint else ViceFlamingo),
-            )
-            Text(
-              text = "GTA VI • ${strings.modeLabel(mode).uppercase(Locale.getDefault())}",
-              style = MaterialTheme.typography.labelSmall,
-              color = ViceCyan,
-              fontWeight = FontWeight.Bold,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-          Spacer(modifier = Modifier.width(8.dp))
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-          ) {
-            Text(
-              text = strings.launchRadarTitle,
-              style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp),
-              color = Color.White.copy(alpha = 0.85f),
-              maxLines = 1,
-              softWrap = false,
-            )
-            Icon(
-              imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-              contentDescription = strings.launchRadarTitle,
-              tint = ViceFlamingo,
-              modifier = Modifier.size(16.dp),
-            )
-          }
-        }
+        val isNarrow = maxWidth < 330.dp
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        if (countdown == null) {
-          Text(
-            text = strings.syncingLaunchClock,
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.White,
-          )
-        } else if (countdown.isUnlocked) {
-          Text(
-            text = strings.welcomeToLeonidaLive,
-            style = MaterialTheme.typography.titleLarge.copy(fontFamily = OutfitFontFamily),
-            color = ViceMint,
-            fontWeight = FontWeight.Bold,
-          )
-        } else {
+        Column(modifier = Modifier.fillMaxWidth()) {
           Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
           ) {
-            Text(
-              text = String.format(
-                Locale.US,
-                "%02dd : %02dh : %02dm : %02ds",
-                countdown.days,
-                countdown.hours,
-                countdown.minutes,
-                countdown.seconds,
-              ),
-              style = MaterialTheme.typography.headlineMedium.copy(
-                fontFamily = JetBrainsMonoFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                fontFeatureSettings = "tnum",
-              ),
-              color = Color.White,
-              maxLines = 1,
-              softWrap = false,
-              overflow = TextOverflow.Ellipsis,
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
               modifier = Modifier.weight(1f),
-            )
+            ) {
+              Box(
+                modifier = Modifier
+                  .size(8.dp)
+                  .clip(CircleShape)
+                  .background(if (countdown?.isUnlocked == true) ViceMint else ViceFlamingo),
+              )
+              Text(
+                text = "GTA VI • ${strings.modeLabel(mode).uppercase(Locale.getDefault())}",
+                style = MaterialTheme.typography.labelSmall,
+                color = ViceCyan,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+            }
             Spacer(modifier = Modifier.width(8.dp))
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+              if (!isNarrow) {
+                Text(
+                  text = strings.launchRadarTitle,
+                  style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp),
+                  color = Color.White.copy(alpha = 0.85f),
+                  maxLines = 1,
+                  softWrap = false,
+                )
+              }
+              Icon(
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                contentDescription = strings.launchRadarTitle,
+                tint = ViceFlamingo,
+                modifier = Modifier.size(16.dp),
+              )
+            }
+          }
+
+          Spacer(modifier = Modifier.height(10.dp))
+
+          if (countdown == null) {
             Text(
-              text = "19 Nov 2026",
-              style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp),
-              color = ViceSunsetAmber,
-              maxLines = 1,
-              softWrap = false,
+              text = strings.syncingLaunchClock,
+              style = MaterialTheme.typography.titleMedium,
+              color = Color.White,
             )
+          } else if (countdown.isUnlocked) {
+            Text(
+              text = strings.welcomeToLeonidaLive,
+              style = MaterialTheme.typography.titleLarge.copy(fontFamily = OutfitFontFamily),
+              color = ViceMint,
+              fontWeight = FontWeight.Bold,
+            )
+          } else {
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(
+                text = String.format(
+                  Locale.US,
+                  "%02dd : %02dh : %02dm : %02ds",
+                  countdown.days,
+                  countdown.hours,
+                  countdown.minutes,
+                  countdown.seconds,
+                ),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                  fontFamily = JetBrainsMonoFontFamily,
+                  fontWeight = FontWeight.Bold,
+                  fontSize = if (isNarrow) 15.5.sp else 19.sp,
+                  letterSpacing = if (isNarrow) (-0.4).sp else (-0.2).sp,
+                  fontFeatureSettings = "tnum",
+                ),
+                color = Color.White,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+              )
+              Spacer(modifier = Modifier.width(6.dp))
+              Text(
+                text = "19 Nov 2026",
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                color = ViceSunsetAmber,
+                maxLines = 1,
+                softWrap = false,
+              )
+            }
           }
         }
       }
