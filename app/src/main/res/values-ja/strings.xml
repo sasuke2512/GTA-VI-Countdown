@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ViceTime</string>
+    <string name="nav_world_zones">世界時計</string>
+    <string name="nav_gta_countdown">GTA VI</string>
+    <string name="add_city">都市を追加</string>
+    <string name="search_zones_hint">都市名・国名・ゾーンを検索…</string>
+    <string name="time_machine_title">タイムマシン変換</string>
+    <string name="time_machine_reset">現在時刻</string>
+    <string name="gta_countdown_eyebrow">GRAND THEFT AUTO VI • ローンチレーダー</string>
+    <string name="gta_release_date_label">公式発売日: 2026年11月19日</string>
+    <string name="gta_unlocked_title">この地域でプレイ可能</string>
+    <string name="rolling_wave_title">世界ミッドナイト解禁ウェーブ</string>
+    <string name="custom_target_title">カスタム日時を設定</string>
+    <string name="format_24h">24H</string>
+    <string name="format_12h">12H</string>
+</resources>

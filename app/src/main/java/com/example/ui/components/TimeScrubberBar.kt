@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.data.LocalAppStrings
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -40,16 +41,17 @@ fun TimeScrubberBar(
   onReset: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
   val isShifted = offsetMinutes != 0
   val offsetLabel = if (!isShifted) {
-    "LIVE • $localTimePreview"
+    "${strings.livePrefix} • $localTimePreview"
   } else {
     val sign = if (offsetMinutes > 0) "+" else "-"
     val totalAbs = abs(offsetMinutes)
     val h = totalAbs / 60
     val m = totalAbs % 60
     val deltaStr = if (m == 0) "${sign}${h}h" else "${sign}${h}h ${m}m"
-    "SHIFTED $deltaStr • $localTimePreview"
+    "${strings.shiftedPrefix} $deltaStr • $localTimePreview"
   }
 
   Surface(
@@ -90,7 +92,7 @@ fun TimeScrubberBar(
           )
           Column {
             Text(
-              text = "Time Machine Converter",
+              text = strings.timeMachineTitle,
               style = MaterialTheme.typography.titleMedium,
               color = MaterialTheme.colorScheme.onSurface,
             )
@@ -119,13 +121,13 @@ fun TimeScrubberBar(
             ) {
               Icon(
                 imageVector = Icons.Rounded.Refresh,
-                contentDescription = "Reset to live time",
+                contentDescription = strings.liveNowButton,
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.size(14.dp),
               )
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                text = "Live Now",
+                text = strings.liveNowButton,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,
@@ -159,7 +161,7 @@ fun TimeScrubberBar(
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         Text("-12h", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Now", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(strings.sliderNow, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("+12h", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("+24h", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }

@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.LocalAppStrings
 import com.example.model.DayPhase
 import com.example.model.WorldClockUiItem
 import com.example.ui.theme.JetBrainsMonoFontFamily
@@ -55,6 +56,7 @@ fun WorldClockCard(
   onRemove: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
   var expanded by remember { mutableStateOf(false) }
 
   val phaseAccent = when (item.dayPhase) {
@@ -71,12 +73,7 @@ fun WorldClockCard(
     DayPhase.NIGHT -> Icons.Rounded.NightsStay
   }
 
-  val phaseLabel = when (item.dayPhase) {
-    DayPhase.DAWN -> "Dawn"
-    DayPhase.DAY -> "Day"
-    DayPhase.SUNSET -> "Sunset"
-    DayPhase.NIGHT -> "Night"
-  }
+  val phaseLabel = strings.dayPhaseLabel(item.dayPhase)
 
   Surface(
     modifier = modifier
@@ -125,7 +122,7 @@ fun WorldClockCard(
             ) {
               Icon(
                 imageVector = phaseIcon,
-                contentDescription = "$phaseLabel phase",
+                contentDescription = phaseLabel,
                 tint = phaseAccent,
                 modifier = Modifier.size(18.dp),
               )
@@ -146,7 +143,7 @@ fun WorldClockCard(
                   },
                 ) {
                   Text(
-                    text = if (item.isLocal) "LOCAL" else item.badge.orEmpty().uppercase(),
+                    text = if (item.isLocal) strings.badgeLocal else item.badge.orEmpty().uppercase(),
                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                     color = if (item.isLocal) {
                       MaterialTheme.colorScheme.secondary
@@ -261,11 +258,11 @@ fun WorldClockCard(
               ) {
                 Icon(
                   imageVector = Icons.Rounded.ArrowUpward,
-                  contentDescription = "Pin to top",
+                  contentDescription = strings.pinTopAction,
                   modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Pin Top")
+                Text(strings.pinTopAction)
               }
               if (canRemove) {
                 IconButton(
@@ -276,7 +273,7 @@ fun WorldClockCard(
                 ) {
                   Icon(
                     imageVector = Icons.Rounded.DeleteOutline,
-                    contentDescription = "Remove ${item.cityName}",
+                    contentDescription = "${strings.removeZoneDesc} ${item.cityName}",
                     tint = MaterialTheme.colorScheme.error,
                   )
                 }

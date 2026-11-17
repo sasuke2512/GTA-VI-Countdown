@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.model.AppLanguage
 import com.example.model.CountdownMode
 import java.time.ZoneId
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ data class UserTimePreferences(
   val pinnedZoneIds: List<String>,
   val is24HourFormat: Boolean,
   val isDarkTheme: Boolean,
+  val selectedLanguage: AppLanguage,
   val countdownMode: CountdownMode,
   val customTargetEpochMillis: Long?,
 )
@@ -29,6 +31,7 @@ class ViceTimePreferencesRepository(private val context: Context) {
     val PINNED_ZONES = stringPreferencesKey("pinned_zones_csv")
     val IS_24_HOUR = booleanPreferencesKey("is_24_hour")
     val IS_DARK_THEME = booleanPreferencesKey("is_dark_theme")
+    val LANGUAGE_CODE = stringPreferencesKey("language_code")
     val COUNTDOWN_MODE = stringPreferencesKey("countdown_mode")
     val CUSTOM_TARGET_EPOCH = longPreferencesKey("custom_target_epoch_millis")
   }
@@ -46,11 +49,13 @@ class ViceTimePreferencesRepository(private val context: Context) {
 
     val modeName = prefs[Keys.COUNTDOWN_MODE]
     val mode = CountdownMode.entries.firstOrNull { it.name == modeName } ?: CountdownMode.VICE_CITY
+    val language = AppLanguage.fromCode(prefs[Keys.LANGUAGE_CODE])
 
     UserTimePreferences(
       pinnedZoneIds = zones,
       is24HourFormat = prefs[Keys.IS_24_HOUR] ?: false,
       isDarkTheme = prefs[Keys.IS_DARK_THEME] ?: true,
+      selectedLanguage = language,
       countdownMode = mode,
       customTargetEpochMillis = prefs[Keys.CUSTOM_TARGET_EPOCH],
     )
@@ -96,6 +101,12 @@ class ViceTimePreferencesRepository(private val context: Context) {
   suspend fun setDarkTheme(isDark: Boolean) {
     context.dataStore.edit { prefs ->
       prefs[Keys.IS_DARK_THEME] = isDark
+    }
+  }
+
+  suspend fun setLanguageCode(code: String) {
+    context.dataStore.edit { prefs ->
+      prefs[Keys.LANGUAGE_CODE] = AppLanguage.fromCode(code).code
     }
   }
 

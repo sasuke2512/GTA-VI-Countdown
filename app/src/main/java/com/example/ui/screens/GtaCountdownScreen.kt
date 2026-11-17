@@ -39,10 +39,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.data.LocalAppStrings
+import com.example.model.AppLanguage
 import com.example.model.CountdownMode
 import com.example.model.LaunchWaveItem
 import com.example.ui.components.AppFooter
 import com.example.ui.components.GtaCountdownHeroCard
+import com.example.ui.components.LanguageFlagSelector
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.theme.OutfitFontFamily
 import com.example.ui.viewmodel.ViceTimeUiState
@@ -51,11 +54,14 @@ import com.example.ui.viewmodel.ViceTimeUiState
 fun GtaCountdownScreen(
   uiState: ViceTimeUiState,
   onToggleTheme: () -> Unit,
+  onSelectLanguage: (AppLanguage) -> Unit,
   onSelectMode: (CountdownMode) -> Unit,
   onOpenCustomPicker: () -> Unit,
   onPinWaveCity: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
+
   BoxWithConstraints(
     modifier = modifier.fillMaxSize(),
     contentAlignment = Alignment.TopCenter,
@@ -73,39 +79,56 @@ fun GtaCountdownScreen(
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          Column {
+          Column(modifier = Modifier.weight(1f)) {
             Text(
-              text = "Launch Radar",
+              text = strings.launchRadarTitle,
               style = MaterialTheme.typography.headlineMedium.copy(
                 fontFamily = OutfitFontFamily,
                 fontWeight = FontWeight.Bold,
               ),
               color = MaterialTheme.colorScheme.onBackground,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
             )
             Text(
-              text = "GTA VI • Rolling Midnight Tracker",
+              text = strings.launchRadarSubtitle,
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
             )
           }
 
-          Surface(
-            modifier = Modifier
-              .size(48.dp)
-              .clip(RoundedCornerShape(16.dp))
-              .clickable(onClick = onToggleTheme)
-              .testTag("toggle_theme_button_radar"),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            tonalElevation = 2.dp,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+          Spacer(modifier = Modifier.width(8.dp))
+
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
           ) {
-            Icon(
-              imageVector = if (uiState.isDarkTheme) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
-              contentDescription = if (uiState.isDarkTheme) "Switch to light mode" else "Switch to dark mode",
-              tint = if (uiState.isDarkTheme) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-              modifier = Modifier.padding(12.dp),
+            LanguageFlagSelector(
+              selectedLanguage = uiState.selectedLanguage,
+              onSelectLanguage = onSelectLanguage,
+              testTag = "language_selector_button_radar",
             )
+
+            Surface(
+              modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .clickable(onClick = onToggleTheme)
+                .testTag("toggle_theme_button_radar"),
+              shape = RoundedCornerShape(16.dp),
+              color = MaterialTheme.colorScheme.surfaceContainer,
+              tonalElevation = 2.dp,
+              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            ) {
+              Icon(
+                imageVector = if (uiState.isDarkTheme) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
+                contentDescription = if (uiState.isDarkTheme) strings.switchToLightMode else strings.switchToDarkMode,
+                tint = if (uiState.isDarkTheme) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(12.dp),
+              )
+            }
           }
         }
       }
@@ -141,19 +164,19 @@ fun GtaCountdownScreen(
             ) {
               Icon(
                 imageVector = Icons.Rounded.SportsEsports,
-                contentDescription = "Console launch info",
+                contentDescription = strings.releaseInfoTitle,
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.padding(12.dp),
               )
             }
             Column(modifier = Modifier.weight(1f)) {
               Text(
-                text = "Rolling Midnight Console Launch",
+                text = strings.releaseInfoTitle,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
               )
               Text(
-                text = "Nov 19, 2026 • PS5 & Xbox Series X|S. Each region unlocks at 00:00 local midnight—tap any city below to pin it to World Zones.",
+                text = strings.releaseInfoBody,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
@@ -171,12 +194,12 @@ fun GtaCountdownScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = "GLOBAL MIDNIGHT LAUNCH WAVE",
+            text = strings.globalWaveHeader,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
           Text(
-            text = "East -> West",
+            text = strings.eastToWest,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.tertiary,
           )
@@ -307,7 +330,7 @@ private fun LaunchWaveRow(
 
         Icon(
           imageVector = if (isPinned) Icons.Rounded.CheckCircle else Icons.Rounded.AddCircleOutline,
-          contentDescription = if (isPinned) "Pinned to World Zones" else "Pin to World Zones",
+          contentDescription = null,
           tint = if (isPinned) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.size(22.dp),
         )

@@ -35,9 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.data.LocalAppStrings
+import com.example.model.AppLanguage
 import com.example.ui.components.AppFooter
 import com.example.ui.components.GtaCountdownCompactBanner
+import com.example.ui.components.LanguageFlagSelector
 import com.example.ui.components.TimeScrubberBar
 import com.example.ui.components.WorldClockCard
 import com.example.ui.theme.OutfitFontFamily
@@ -48,6 +52,7 @@ fun WorldZonesScreen(
   uiState: ViceTimeUiState,
   onToggle24Hour: () -> Unit,
   onToggleTheme: () -> Unit,
+  onSelectLanguage: (AppLanguage) -> Unit,
   onOpenAddZone: () -> Unit,
   onOpenCountdownTab: () -> Unit,
   onScrubberChange: (Int) -> Unit,
@@ -56,6 +61,8 @@ fun WorldZonesScreen(
   onRemoveZone: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
+
   BoxWithConstraints(
     modifier = modifier.fillMaxSize(),
     contentAlignment = Alignment.TopCenter,
@@ -82,13 +89,13 @@ fun WorldZonesScreen(
             Column(modifier = Modifier.weight(1f)) {
               Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
               ) {
                 Icon(
                   imageVector = Icons.Rounded.Public,
                   contentDescription = null,
                   tint = MaterialTheme.colorScheme.secondary,
-                  modifier = Modifier.size(22.dp),
+                  modifier = Modifier.size(20.dp),
                 )
                 Text(
                   text = "ViceTime",
@@ -97,19 +104,31 @@ fun WorldZonesScreen(
                     fontWeight = FontWeight.Bold,
                   ),
                   color = MaterialTheme.colorScheme.onBackground,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
                 )
               }
               Text(
-                text = "Local: ${uiState.localZoneName} • ${uiState.pinnedClocks.size} zones",
+                text = "${strings.localPrefix} ${uiState.localZoneName} • ${uiState.pinnedClocks.size} ${strings.zonesCountSuffix}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
               )
             }
 
+            Spacer(modifier = Modifier.width(6.dp))
+
             Row(
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
+              LanguageFlagSelector(
+                selectedLanguage = uiState.selectedLanguage,
+                onSelectLanguage = onSelectLanguage,
+                testTag = "language_selector_button",
+              )
+
               // Light / Dark Theme Toggle
               Surface(
                 modifier = Modifier
@@ -124,7 +143,7 @@ fun WorldZonesScreen(
               ) {
                 Icon(
                   imageVector = if (uiState.isDarkTheme) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
-                  contentDescription = if (uiState.isDarkTheme) "Switch to light mode" else "Switch to dark mode",
+                  contentDescription = if (uiState.isDarkTheme) strings.switchToLightMode else strings.switchToDarkMode,
                   tint = if (uiState.isDarkTheme) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
                   modifier = Modifier.padding(12.dp),
                 )
@@ -143,7 +162,7 @@ fun WorldZonesScreen(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
               ) {
                 Row(
-                  modifier = Modifier.padding(horizontal = 14.dp),
+                  modifier = Modifier.padding(horizontal = 11.dp),
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
                   Text(
@@ -158,31 +177,19 @@ fun WorldZonesScreen(
               // Add City Button
               Surface(
                 modifier = Modifier
-                  .height(48.dp)
+                  .size(48.dp)
                   .clip(RoundedCornerShape(16.dp))
                   .clickable(onClick = onOpenAddZone)
                   .testTag("add_city_button"),
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.primary,
               ) {
-                Row(
-                  modifier = Modifier.padding(horizontal = 14.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add city time zone",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(18.dp),
-                  )
-                  Spacer(modifier = Modifier.width(4.dp))
-                  Text(
-                    text = "Add",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold,
-                  )
-                }
+                Icon(
+                  imageVector = Icons.Rounded.Add,
+                  contentDescription = strings.addButton,
+                  tint = MaterialTheme.colorScheme.onPrimary,
+                  modifier = Modifier.padding(12.dp),
+                )
               }
             }
           }
@@ -203,7 +210,7 @@ fun WorldZonesScreen(
           )
 
           Text(
-            text = "PINNED WORLD ZONES",
+            text = strings.pinnedWorldZonesHeader,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp),

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.LocalAppStrings
 
 private const val CREATOR_X_URL = "https://x.com/saske2512"
 private val HeartRed = Color(0xFFFF2E4C)
@@ -38,6 +39,7 @@ private val HeartRed = Color(0xFFFF2E4C)
 @Composable
 fun AppFooter(modifier: Modifier = Modifier) {
   val uriHandler = LocalUriHandler.current
+  val strings = LocalAppStrings.current
 
   Surface(
     modifier = modifier
@@ -55,7 +57,6 @@ fun AppFooter(modifier: Modifier = Modifier) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      // Line 1: Created with ♥ (red) by SaSuKe2512 (@saske2512 on X)
       Row(
         modifier = Modifier
           .clip(RoundedCornerShape(12.dp))
@@ -73,11 +74,11 @@ fun AppFooter(modifier: Modifier = Modifier) {
       ) {
         Text(
           text = buildAnnotatedString {
-            append("Created with ")
+            append(strings.footerCreatedWith)
             withStyle(SpanStyle(color = HeartRed, fontWeight = FontWeight.Bold)) {
               append("♥")
             }
-            append(" by ")
+            append(strings.footerBy)
             withStyle(
               SpanStyle(
                 color = MaterialTheme.colorScheme.primary,
@@ -110,18 +111,16 @@ fun AppFooter(modifier: Modifier = Modifier) {
 
       Spacer(modifier = Modifier.height(2.dp))
 
-      // Line 2: Copyright & Trademarks
       Text(
-        text = "© 2026 ViceTime • SaSuKe2512. All rights reserved. Grand Theft Auto VI and GTA VI are trademarks of Rockstar Games and Take-Two Interactive Software, Inc.",
+        text = strings.footerCopyrightTrademarks,
         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 11.5.sp, lineHeight = 16.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier.testTag("footer_copyright_trademarks"),
       )
 
-      // Line 3: Not affiliated with Rockstar Games
       Text(
-        text = "Not affiliated with, endorsed by, or sponsored by Rockstar Games.",
+        text = strings.footerNotAffiliated,
         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, lineHeight = 15.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
         textAlign = TextAlign.Center,

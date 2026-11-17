@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.data.LocalAppStrings
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.viewmodel.CatalogCityPreview
 
@@ -49,6 +50,7 @@ fun AddZoneBottomSheet(
   onToggleZone: (String) -> Unit,
   onDismiss: () -> Unit,
 ) {
+  val strings = LocalAppStrings.current
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
   ModalBottomSheet(
@@ -64,12 +66,12 @@ fun AddZoneBottomSheet(
         .padding(horizontal = 20.dp),
     ) {
       Text(
-        text = "Add World Time Zone",
+        text = strings.addZoneTitle,
         style = MaterialTheme.typography.headlineMedium,
         color = MaterialTheme.colorScheme.onSurface,
       )
       Text(
-        text = "Search 590+ global IANA time zones and cities",
+        text = strings.addZoneSubtitle,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -79,7 +81,7 @@ fun AddZoneBottomSheet(
       OutlinedTextField(
         value = searchQuery,
         onValueChange = onSearchQueryChange,
-        placeholder = { Text("Search city, country, or zone…") },
+        placeholder = { Text(strings.searchZonesPlaceholder) },
         leadingIcon = {
           Icon(
             imageVector = Icons.Rounded.Search,

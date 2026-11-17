@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
+import com.example.data.LocalAppStrings
 import com.example.model.CountdownBreakdown
 import com.example.model.CountdownMode
 import com.example.ui.theme.JetBrainsMonoFontFamily
@@ -62,6 +62,8 @@ fun GtaCountdownCompactBanner(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
+
   Surface(
     modifier = modifier
       .fillMaxWidth()
@@ -110,6 +112,7 @@ fun GtaCountdownCompactBanner(
           Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f),
           ) {
             Box(
               modifier = Modifier
@@ -118,10 +121,12 @@ fun GtaCountdownCompactBanner(
                 .background(if (countdown?.isUnlocked == true) ViceMint else ViceFlamingo),
             )
             Text(
-              text = "GTA VI • ${mode.label.uppercase(Locale.US)}",
+              text = "GTA VI • ${strings.modeLabel(mode).uppercase(Locale.getDefault())}",
               style = MaterialTheme.typography.labelSmall,
               color = ViceCyan,
               fontWeight = FontWeight.Bold,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
             )
           }
           Row(
@@ -129,13 +134,13 @@ fun GtaCountdownCompactBanner(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
           ) {
             Text(
-              text = "Launch Radar",
+              text = strings.launchRadarTitle,
               style = MaterialTheme.typography.labelSmall,
               color = Color.White.copy(alpha = 0.85f),
             )
             Icon(
               imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-              contentDescription = "Open GTA VI Launch Radar",
+              contentDescription = strings.launchRadarTitle,
               tint = ViceFlamingo,
               modifier = Modifier.size(16.dp),
             )
@@ -146,13 +151,13 @@ fun GtaCountdownCompactBanner(
 
         if (countdown == null) {
           Text(
-            text = "Syncing launch clock…",
+            text = strings.syncingLaunchClock,
             style = MaterialTheme.typography.titleMedium,
             color = Color.White,
           )
         } else if (countdown.isUnlocked) {
           Text(
-            text = "WELCOME TO LEONIDA • NOW LIVE",
+            text = strings.welcomeToLeonidaLive,
             style = MaterialTheme.typography.titleLarge.copy(fontFamily = OutfitFontFamily),
             color = ViceMint,
             fontWeight = FontWeight.Bold,
@@ -180,7 +185,7 @@ fun GtaCountdownCompactBanner(
               color = Color.White,
             )
             Text(
-              text = "Nov 19, 2026",
+              text = "19 Nov 2026",
               style = MaterialTheme.typography.labelSmall,
               color = ViceSunsetAmber,
             )
@@ -199,6 +204,8 @@ fun GtaCountdownHeroCard(
   onOpenCustomPicker: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val strings = LocalAppStrings.current
+
   Surface(
     modifier = modifier
       .fillMaxWidth()
@@ -270,7 +277,7 @@ fun GtaCountdownHeroCard(
                   modifier = Modifier.size(14.dp),
                 )
                 Text(
-                  text = "GTA VI LAUNCH RADAR",
+                  text = strings.gtaRadarBadge,
                   style = MaterialTheme.typography.labelSmall,
                   color = ViceCyan,
                   fontWeight = FontWeight.Bold,
@@ -284,7 +291,7 @@ fun GtaCountdownHeroCard(
               border = BorderStroke(1.dp, ViceFlamingo.copy(alpha = 0.6f)),
             ) {
               Text(
-                text = "NOV 19, 2026",
+                text = "19 NOV 2026",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -295,7 +302,7 @@ fun GtaCountdownHeroCard(
 
           Column {
             Text(
-              text = "Grand Theft Auto VI",
+              text = strings.gtaTitle,
               style = MaterialTheme.typography.displayMedium.copy(
                 fontFamily = OutfitFontFamily,
                 fontWeight = FontWeight.Bold,
@@ -303,7 +310,7 @@ fun GtaCountdownHeroCard(
               color = Color.White,
             )
             Text(
-              text = mode.subtitle,
+              text = strings.modeSubtitle(mode),
               style = MaterialTheme.typography.bodyMedium,
               color = Color.White.copy(alpha = 0.82f),
             )
@@ -320,7 +327,7 @@ fun GtaCountdownHeroCard(
       ) {
         if (countdown == null) {
           Text(
-            text = "Calculating countdown…",
+            text = strings.calculatingCountdown,
             color = Color.White,
             style = MaterialTheme.typography.bodyLarge,
           )
@@ -336,14 +343,14 @@ fun GtaCountdownHeroCard(
               horizontalAlignment = Alignment.CenterHorizontally,
             ) {
               Text(
-                text = "UNLOCKED — NOW AVAILABLE",
+                text = strings.unlockedNowAvailable,
                 style = MaterialTheme.typography.titleLarge,
                 color = ViceMint,
                 fontWeight = FontWeight.Bold,
               )
               Spacer(modifier = Modifier.height(4.dp))
               Text(
-                text = "Target reached: ${countdown.targetFormatted}",
+                text = "${strings.targetReachedPrefix} ${countdown.targetFormatted}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.8f),
               )
@@ -356,25 +363,25 @@ fun GtaCountdownHeroCard(
           ) {
             CountdownDigitTile(
               value = String.format(Locale.US, "%02d", countdown.days),
-              label = "DAYS",
+              label = strings.unitDays,
               accent = ViceFlamingo,
               modifier = Modifier.weight(1f),
             )
             CountdownDigitTile(
               value = String.format(Locale.US, "%02d", countdown.hours),
-              label = "HRS",
+              label = strings.unitHours,
               accent = ViceSunsetAmber,
               modifier = Modifier.weight(1f),
             )
             CountdownDigitTile(
               value = String.format(Locale.US, "%02d", countdown.minutes),
-              label = "MIN",
+              label = strings.unitMinutes,
               accent = ViceCyan,
               modifier = Modifier.weight(1f),
             )
             CountdownDigitTile(
               value = String.format(Locale.US, "%02d", countdown.seconds),
-              label = "SEC",
+              label = strings.unitSeconds,
               accent = ViceMint,
               modifier = Modifier.weight(1f),
             )
@@ -386,11 +393,12 @@ fun GtaCountdownHeroCard(
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
               Text(
-                text = "Target: ${countdown.targetFormatted}",
+                text = "${strings.targetPrefix} ${countdown.targetFormatted}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Color(0xFFB5B0D1),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
               )
               Text(
                 text = "${(countdown.progressFraction * 100f).toInt()}%",
@@ -411,12 +419,11 @@ fun GtaCountdownHeroCard(
           }
         }
 
-        // Launch Region Selector Pills
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
-            text = "COUNTDOWN REGION",
+            text = strings.countdownRegionHeader,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = Color(0xFFB5B0D1),
           )
           Row(
             modifier = Modifier.fillMaxWidth(),
@@ -460,18 +467,13 @@ fun GtaCountdownHeroCard(
                     Icon(
                       imageVector = if (entry == CountdownMode.CUSTOM) Icons.Rounded.EditCalendar else Icons.Rounded.Public,
                       contentDescription = null,
-                      tint = if (selected) ViceFlamingo else MaterialTheme.colorScheme.onSurfaceVariant,
+                      tint = if (selected) ViceFlamingo else Color(0xFFB5B0D1),
                       modifier = Modifier.size(14.dp),
                     )
                     Text(
-                      text = when (entry) {
-                        CountdownMode.AUCKLAND -> "NZ 1st"
-                        CountdownMode.VICE_CITY -> "Miami"
-                        CountdownMode.LOCAL -> "Local"
-                        CountdownMode.CUSTOM -> "Custom"
-                      },
+                      text = strings.modeShort(entry),
                       style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
-                      color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                      color = if (selected) Color.White else Color(0xFFB5B0D1),
                       maxLines = 1,
                       overflow = TextOverflow.Ellipsis,
                     )

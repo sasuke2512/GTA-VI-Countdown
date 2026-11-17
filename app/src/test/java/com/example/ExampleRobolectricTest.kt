@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.example.data.CityCatalog
 import com.example.data.ViceTimePreferencesRepository
+import com.example.model.AppLanguage
 import java.time.ZoneId
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -47,5 +49,23 @@ class ExampleRobolectricTest {
 
     repository.setDarkTheme(true)
     assertTrue(repository.preferencesFlow.first().isDarkTheme)
+  }
+
+  @Test
+  fun `language defaults to system and persists selected language`() = runTest {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val repository = ViceTimePreferencesRepository(context)
+
+    assertEquals(AppLanguage.SYSTEM, repository.preferencesFlow.first().selectedLanguage)
+    assertEquals(
+      AppLanguage.SPANISH,
+      AppLanguage.resolveEffectiveLanguage(AppLanguage.SYSTEM, Locale("es", "MX")),
+    )
+
+    repository.setLanguageCode(AppLanguage.JAPANESE.code)
+    assertEquals(AppLanguage.JAPANESE, repository.preferencesFlow.first().selectedLanguage)
+
+    repository.setLanguageCode(AppLanguage.SYSTEM.code)
+    assertEquals(AppLanguage.SYSTEM, repository.preferencesFlow.first().selectedLanguage)
   }
 }

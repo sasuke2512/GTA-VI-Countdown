@@ -30,9 +30,11 @@ import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,6 +42,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.data.LocalAppStrings
+import com.example.data.stringsFor
 import com.example.ui.components.AddZoneBottomSheet
 import com.example.ui.components.CustomTargetDialog
 import com.example.ui.screens.GtaCountdownScreen
@@ -47,9 +51,9 @@ import com.example.ui.screens.WorldZonesScreen
 import com.example.ui.theme.ViceTimeTheme
 import com.example.ui.viewmodel.ViceTimeViewModel
 
-enum class ViceTab(val label: String) {
-  WORLD_ZONES("World Zones"),
-  GTA_COUNTDOWN("GTA VI"),
+enum class ViceTab {
+  WORLD_ZONES,
+  GTA_COUNTDOWN,
 }
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +66,7 @@ class MainActivity : ComponentActivity() {
     setContent {
       val viewModel: ViceTimeViewModel = viewModel()
       val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+      val appStrings = remember(uiState.selectedLanguage) { stringsFor(uiState.selectedLanguage) }
 
       LaunchedEffect(uiState.isDarkTheme) {
         val barStyle = if (uiState.isDarkTheme) {
@@ -78,8 +83,10 @@ class MainActivity : ComponentActivity() {
         )
       }
 
-      ViceTimeTheme(darkTheme = uiState.isDarkTheme) {
-        ViceTimeApp(viewModel = viewModel)
+      CompositionLocalProvider(LocalAppStrings provides appStrings) {
+        ViceTimeTheme(darkTheme = uiState.isDarkTheme) {
+          ViceTimeApp(viewModel = viewModel)
+        }
       }
     }
   }
@@ -88,6 +95,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val strings = LocalAppStrings.current
   var currentTab by rememberSaveable { mutableStateOf(ViceTab.WORLD_ZONES) }
   var showAddZoneSheet by rememberSaveable { mutableStateOf(false) }
   var showCustomTargetDialog by rememberSaveable { mutableStateOf(false) }
@@ -111,6 +119,10 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
           ) {
             ViceTab.entries.forEach { tab ->
               val selected = tab == currentTab
+              val label = when (tab) {
+                ViceTab.WORLD_ZONES -> strings.navWorldZones
+                ViceTab.GTA_COUNTDOWN -> strings.navGtaCountdown
+              }
               val activeColor = if (tab == ViceTab.GTA_COUNTDOWN) {
                 MaterialTheme.colorScheme.primary
               } else {
@@ -125,10 +137,10 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
                       ViceTab.WORLD_ZONES -> if (selected) Icons.Rounded.Public else Icons.Outlined.Public
                       ViceTab.GTA_COUNTDOWN -> if (selected) Icons.Rounded.Timer else Icons.Outlined.Timer
                     },
-                    contentDescription = tab.label,
+                    contentDescription = label,
                   )
                 },
-                label = { Text(tab.label) },
+                label = { Text(label) },
                 colors = NavigationBarItemDefaults.colors(
                   selectedIconColor = activeColor,
                   selectedTextColor = MaterialTheme.colorScheme.onSurface,
@@ -155,6 +167,10 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
           ) {
             ViceTab.entries.forEach { tab ->
               val selected = tab == currentTab
+              val label = when (tab) {
+                ViceTab.WORLD_ZONES -> strings.navWorldZones
+                ViceTab.GTA_COUNTDOWN -> strings.navGtaCountdown
+              }
               val activeColor = if (tab == ViceTab.GTA_COUNTDOWN) {
                 MaterialTheme.colorScheme.primary
               } else {
@@ -169,10 +185,10 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
                       ViceTab.WORLD_ZONES -> if (selected) Icons.Rounded.Public else Icons.Outlined.Public
                       ViceTab.GTA_COUNTDOWN -> if (selected) Icons.Rounded.Timer else Icons.Outlined.Timer
                     },
-                    contentDescription = tab.label,
+                    contentDescription = label,
                   )
                 },
-                label = { Text(tab.label) },
+                label = { Text(label) },
                 colors = NavigationRailItemDefaults.colors(
                   selectedIconColor = activeColor,
                   selectedTextColor = MaterialTheme.colorScheme.onSurface,
@@ -193,6 +209,7 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
                 uiState = uiState,
                 onToggle24Hour = viewModel::toggle24HourFormat,
                 onToggleTheme = viewModel::toggleDarkTheme,
+                onSelectLanguage = viewModel::setLanguage,
                 onOpenAddZone = { showAddZoneSheet = true },
                 onOpenCountdownTab = { currentTab = ViceTab.GTA_COUNTDOWN },
                 onScrubberChange = viewModel::setScrubberOffsetMinutes,
@@ -206,6 +223,7 @@ fun ViceTimeApp(viewModel: ViceTimeViewModel = viewModel()) {
               GtaCountdownScreen(
                 uiState = uiState,
                 onToggleTheme = viewModel::toggleDarkTheme,
+                onSelectLanguage = viewModel::setLanguage,
                 onSelectMode = viewModel::setCountdownMode,
                 onOpenCustomPicker = { showCustomTargetDialog = true },
                 onPinWaveCity = viewModel::toggleZonePinned,

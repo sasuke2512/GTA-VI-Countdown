@@ -3,10 +3,8 @@ package com.example.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -29,8 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.data.CityCatalog
-import com.example.ui.theme.ViceFlamingo
-import com.example.ui.theme.ViceSurface
+import com.example.data.LocalAppStrings
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -43,6 +40,7 @@ fun CustomTargetDialog(
   onConfirmEpochMillis: (Long) -> Unit,
   onDismiss: () -> Unit,
 ) {
+  val strings = LocalAppStrings.current
   val defaultMillis = remember {
     CityCatalog.GTA_VI_LAUNCH_LOCAL.atZone(ZoneOffset.UTC).toInstant().toEpochMilli()
   }
@@ -58,22 +56,22 @@ fun CustomTargetDialog(
           onClick = { showTimeStep = true },
           modifier = Modifier.testTag("custom_date_next_button"),
         ) {
-          Text("Next: Time")
+          Text(strings.nextTimeButton)
         }
       },
       dismissButton = {
         TextButton(onClick = onDismiss) {
-          Text("Cancel")
+          Text(strings.cancelButton)
         }
       },
     ) {
       DatePicker(state = datePickerState)
     }
   } else {
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
       onDismissRequest = onDismiss,
       containerColor = MaterialTheme.colorScheme.surface,
-      title = { Text("Select Launch Time (Local)") },
+      title = { Text(strings.customTimeTitle) },
       text = {
         Column(
           modifier = Modifier.fillMaxWidth(),
@@ -97,16 +95,16 @@ fun CustomTargetDialog(
           colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
           modifier = Modifier.testTag("custom_target_confirm_button"),
         ) {
-          Text("Start Countdown")
+          Text(strings.startCountdownButton)
         }
       },
       dismissButton = {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           OutlinedButton(onClick = { showTimeStep = false }) {
-            Text("Back")
+            Text(strings.backButton)
           }
           TextButton(onClick = onDismiss) {
-            Text("Cancel")
+            Text(strings.cancelButton)
           }
         }
       },

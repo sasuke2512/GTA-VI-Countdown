@@ -3,9 +3,12 @@ package com.example.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.AppStrings
 import com.example.data.CityCatalog
 import com.example.data.UserTimePreferences
 import com.example.data.ViceTimePreferencesRepository
+import com.example.data.stringsFor
+import com.example.model.AppLanguage
 import com.example.model.CatalogCity
 import com.example.model.CountdownBreakdown
 import com.example.model.CountdownMode
@@ -31,6 +34,7 @@ import kotlinx.coroutines.launch
 data class ViceTimeUiState(
   val is24HourFormat: Boolean = false,
   val isDarkTheme: Boolean = true,
+  val selectedLanguage: AppLanguage = AppLanguage.SYSTEM,
   val scrubberOffsetMinutes: Int = 0,
   val countdownMode: CountdownMode = CountdownMode.VICE_CITY,
   val countdown: CountdownBreakdown? = null,
@@ -88,6 +92,10 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     viewModelScope.launch { repository.setDarkTheme(!current) }
   }
 
+  fun setLanguage(language: AppLanguage) {
+    viewModelScope.launch { repository.setLanguageCode(language.code) }
+  }
+
   fun toggleZonePinned(zoneId: String) {
     viewModelScope.launch { repository.toggleZonePinned(zoneId) }
   }
@@ -129,8 +137,10 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     val effectiveNow = realNow.plusSeconds(offsetMinutes * 60L)
     val localZone = ZoneId.systemDefault()
     val localZoned = effectiveNow.atZone(localZone)
+    val activeLocale = AppLanguage.resolveLocale(prefs.selectedLanguage)
+    val strings = stringsFor(prefs.selectedLanguage)
 
-    val countdown = computeCountdown(realNow, prefs, localZone)
+    val countdown = computeCountdown(realNow, prefs, localZone, activeLocale)
     val pinnedClocks = prefs.pinnedZoneIds.map { zoneId ->
       buildWorldClockItem(
         zoneIdStr = zoneId,
@@ -139,11 +149,13 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
         localZone = localZone,
         localDate = localZoned.toLocalDate(),
         is24Hour = prefs.is24HourFormat,
+        locale = activeLocale,
+        strings = strings,
       )
     }
 
     val waves = CityCatalog.LAUNCH_WAVE_ZONES.map { city ->
-      buildLaunchWaveItem(city, realNow, localZone, prefs.is24HourFormat)
+      buildLaunchWaveItem(city, realNow, localZone, prefs.is24HourFormat, activeLocale, strings)
     }
 
     val trimmedQuery = query.trim()
@@ -176,6 +188,7 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     return ViceTimeUiState(
       is24HourFormat = prefs.is24HourFormat,
       isDarkTheme = prefs.isDarkTheme,
+      selectedLanguage = prefs.selectedLanguage,
       scrubberOffsetMinutes = offsetMinutes,
       countdownMode = prefs.countdownMode,
       countdown = countdown,
@@ -193,6 +206,7 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     now: Instant,
     prefs: UserTimePreferences,
     localZone: ZoneId,
+    locale: Locale,
   ): CountdownBreakdown {
     val targetInstant = when (prefs.countdownMode) {
       CountdownMode.AUCKLAND ->
@@ -227,7 +241,7 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
 
     val targetDisplayZone = prefs.countdownMode.zoneId?.let { ZoneId.of(it) } ?: localZone
     val targetFormatted = targetInstant.atZone(targetDisplayZone)
-      .format(DateTimeFormatter.ofPattern("EEE, MMM d, yyyy • HH:mm z", Locale.US))
+      .format(DateTimeFormatter.ofPattern("EEE, MMM d, yyyy • HH:mm z", locale))
 
     return CountdownBreakdown(
       days = days,
@@ -249,6 +263,8 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     localZone: ZoneId,
     localDate: LocalDate,
     is24Hour: Boolean,
+    locale: Locale,
+    strings: AppStrings,
   ): WorldClockUiItem {
     val zone = ZoneId.of(zoneIdStr)
     val zdt = effectiveNow.atZone(zone)
@@ -261,14 +277,14 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
 
     val dayDelta = zdt.toLocalDate().toEpochDay() - localDate.toEpochDay()
     val dayWord = when {
-      dayDelta > 0 -> "Tomorrow"
-      dayDelta < 0 -> "Yesterday"
-      else -> "Today"
+      dayDelta > 0 -> strings.tomorrowWord
+      dayDelta < 0 -> strings.yesterdayWord
+      else -> strings.todayWord
     }
 
     val diffLabel = when {
-      zoneIdStr == localZone.id -> "$dayWord • Local"
-      diffSeconds == 0 -> "$dayWord • Same time"
+      zoneIdStr == localZone.id -> "$dayWord • ${strings.modeLocalShort}"
+      diffSeconds == 0 -> "$dayWord • ${strings.sameTimeWord}"
       diffMins == 0 -> {
         val sign = if (diffHours > 0) "+" else ""
         "$dayWord • ${sign}${diffHours}h"
@@ -283,16 +299,16 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     val unlockRemMillis = Duration.between(realNow, zoneUnlockInstant).toMillis()
     val isGtaUnlocked = unlockRemMillis <= 0L
     val gtaLabel = if (isGtaUnlocked) {
-      "GTA VI Live"
+      strings.gtaLiveZoneBadge
     } else {
       val remSec = unlockRemMillis / 1000L
       val d = remSec / 86_400L
       val h = (remSec % 86_400L) / 3_600L
       val m = (remSec % 3_600L) / 60L
       when {
-        d > 0 -> "GTA VI in ${d}d ${h}h"
-        h > 0 -> "GTA VI in ${h}h ${m}m"
-        else -> "GTA VI in ${m}m"
+        d > 0 -> "${strings.gtaInZonePrefix} ${d}d ${h}h"
+        h > 0 -> "${strings.gtaInZonePrefix} ${h}h ${m}m"
+        else -> "${strings.gtaInZonePrefix} ${m}m"
       }
     }
 
@@ -304,6 +320,8 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
       else -> DayPhase.NIGHT
     }
 
+    val dateFormatter = DateTimeFormatter.ofPattern("EEE, MMM d", locale)
+
     return WorldClockUiItem(
       zoneId = zoneIdStr,
       cityName = cityInfo.city,
@@ -311,7 +329,7 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
       formattedTime = formatClockMain(zdt, is24Hour),
       formattedAmPm = if (is24Hour) "" else zdt.format(AM_PM_FMT),
       formattedSeconds = String.format(Locale.US, "%02d", zdt.second),
-      formattedDate = zdt.format(DATE_FMT),
+      formattedDate = zdt.format(dateFormatter),
       utcOffsetLabel = formatUtcOffset(zdt),
       relativeOffsetLabel = diffLabel,
       dayPhase = dayPhase,
@@ -327,6 +345,8 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     now: Instant,
     localZone: ZoneId,
     is24Hour: Boolean,
+    locale: Locale,
+    strings: AppStrings,
   ): LaunchWaveItem {
     val zone = ZoneId.of(city.zoneId)
     val unlockInstant = CityCatalog.GTA_VI_LAUNCH_LOCAL.atZone(zone).toInstant()
@@ -335,7 +355,7 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     val isUnlocked = remMillis <= 0L
 
     val countdownShort = if (isUnlocked) {
-      "UNLOCKED"
+      strings.unlockedBadge
     } else {
       val sec = remMillis / 1000L
       val d = sec / 86_400L
@@ -346,14 +366,14 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     }
 
     val localPattern = if (is24Hour) "MMM d, HH:mm" else "MMM d, h:mm a"
-    val yourTimeStr = unlockInLocal.format(DateTimeFormatter.ofPattern(localPattern, Locale.US))
+    val yourTimeStr = unlockInLocal.format(DateTimeFormatter.ofPattern(localPattern, locale))
 
     return LaunchWaveItem(
       cityName = city.city,
       regionLabel = city.country,
       zoneId = city.zoneId,
       unlockLocalTime = "Nov 19, 00:00",
-      unlockInYourTime = "Your time: $yourTimeStr",
+      unlockInYourTime = "${strings.yourTimePrefix} $yourTimeStr",
       countdownShort = countdownShort,
       isUnlocked = isUnlocked,
     )
@@ -372,6 +392,5 @@ class ViceTimeViewModel(application: Application) : AndroidViewModel(application
     private val TIME_24_FMT = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
     private val TIME_12_FMT = DateTimeFormatter.ofPattern("h:mm", Locale.US)
     private val AM_PM_FMT = DateTimeFormatter.ofPattern("a", Locale.US)
-    private val DATE_FMT = DateTimeFormatter.ofPattern("EEE, MMM d", Locale.US)
   }
 }
