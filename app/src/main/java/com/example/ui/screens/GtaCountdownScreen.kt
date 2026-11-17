@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.model.CountdownMode
 import com.example.model.LaunchWaveItem
+import com.example.ui.components.AppFooter
 import com.example.ui.components.GtaCountdownHeroCard
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.theme.OutfitFontFamily
@@ -192,7 +193,11 @@ fun GtaCountdownScreen(
       }
 
       item {
-        Spacer(modifier = Modifier.height(12.dp))
+        Column {
+          Spacer(modifier = Modifier.height(6.dp))
+          AppFooter()
+          Spacer(modifier = Modifier.height(12.dp))
+        }
       }
     }
   }

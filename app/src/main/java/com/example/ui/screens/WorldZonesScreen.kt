@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.ui.components.AppFooter
 import com.example.ui.components.GtaCountdownCompactBanner
 import com.example.ui.components.TimeScrubberBar
 import com.example.ui.components.WorldClockCard
@@ -220,7 +221,11 @@ fun WorldZonesScreen(
       }
 
       item(span = { GridItemSpan(columns) }) {
-        Spacer(modifier = Modifier.height(12.dp))
+        Column {
+          Spacer(modifier = Modifier.height(6.dp))
+          AppFooter()
+          Spacer(modifier = Modifier.height(12.dp))
+        }
       }
     }
   }
